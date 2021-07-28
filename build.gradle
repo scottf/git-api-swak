@@ -1,0 +1,13 @@
+plugins {
+    id 'java'
+    id 'java-library'
+}
+
+repositories {
+    // Use JCenter for resolving dependencies.
+    jcenter()
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.8.7'
+}
