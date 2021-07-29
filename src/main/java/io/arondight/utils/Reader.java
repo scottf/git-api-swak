@@ -5,8 +5,7 @@ package io.arondight.utils;
 
 import com.google.gson.Gson;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @SuppressWarnings("rawtypes")
 public class Reader {
@@ -32,30 +31,37 @@ public class Reader {
 
         Map<String, Map> objects = getObjects((Map)map.get("definitions"));
 
+        List<String> results = new ArrayList<>();
         for (String object : objects.keySet()) {
-            processObject(object, objects.get(object));
+            processObject(object, objects.get(object), results);
         }
+
+        Collections.sort(results);
+        results.forEach(System.out::println);
     }
 
-    private void processObject(String object, Map map) {
+    private void processObject(String object, Map map, List<String> results) {
         for (Object propKey : map.keySet()) {
             Map props = (Map)map.get(propKey);
-            if (!checkRef(object, propKey, props, false)) {
+            String result = checkRef(object, propKey, props, false);
+            if (result == null) {
                 Map items = (Map)props.get("items");
                 if (items != null) {
-                    checkRef(object, propKey, items, true);
+                    result = checkRef(object, propKey, items, true);
                 }
+            }
+            if (result != null) {
+                results.add(result);
             }
         }
     }
 
-    private boolean checkRef(String object, Object propKey, Map props, boolean array) {
+    private String checkRef(String object, Object propKey, Map props, boolean array) {
         String ref = (String)props.get("$ref");
         if (refTarget.equals(ref)) {
-            System.out.println("- `" + object + "." + propKey + (array ? "` _array_": "`"));
-            return true;
+            return "- `" + object + "." + propKey + (array ? "` _array_": "`");
         }
-        return false;
+        return null;
     }
 
     private Map<String, Map> getObjects(Map definitions) {
