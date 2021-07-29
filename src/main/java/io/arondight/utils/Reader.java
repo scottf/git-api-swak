@@ -10,19 +10,19 @@ import java.util.Map;
 
 @SuppressWarnings("rawtypes")
 public class Reader {
+    static final String DEFAULT_URL = "https://raw.githubusercontent.com/nats-io/jsm.go/main/schema_source/jetstream/api/v1/definitions.json";
+
     String refTarget;
-    String url = "https://raw.githubusercontent.com/nats-io/jsm.go/main/schema_source/jetstream/api/v1/definitions.json";
 
     public Reader(String refTarget) {
         this.refTarget = refTarget;
     }
 
-    public Reader(String refTarget, String url) {
-        this.refTarget = refTarget;
-        this.url = url;
+    public void read() throws Exception {
+        read(DEFAULT_URL);
     }
 
-    public void read() throws Exception {
+    public void read(String url) throws Exception {
         System.out.println("Reading: " + url + "\nTarget: " + refTarget + "\n");
 
         String json = FileUtils.readUrl(url);
