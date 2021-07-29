@@ -8,22 +8,9 @@ import com.google.gson.Gson;
 import java.util.*;
 
 @SuppressWarnings("rawtypes")
-public class Reader {
-    static final String DEFAULT_URL = "https://raw.githubusercontent.com/nats-io/jsm.go/main/schema_source/jetstream/api/v1/definitions.json";
+public class DefinitionsReader {
 
-    String refTarget;
-
-    public Reader(String refTarget) {
-        this.refTarget = refTarget;
-    }
-
-    public void read() throws Exception {
-        read(DEFAULT_URL);
-    }
-
-    public void read(String url) throws Exception {
-        System.out.println("Reading: " + url + "\nTarget: " + refTarget + "\n");
-
+    public static void read(String refTarget, String url) throws Exception {
         String json = FileUtils.readUrl(url);
 
         Gson gson = new Gson();
@@ -33,21 +20,21 @@ public class Reader {
 
         List<String> results = new ArrayList<>();
         for (String object : objects.keySet()) {
-            processObject(object, objects.get(object), results);
+            processObject(refTarget, object, objects.get(object), results);
         }
 
         Collections.sort(results);
         results.forEach(System.out::println);
     }
 
-    private void processObject(String object, Map map, List<String> results) {
+    private static void processObject(String refTarget, String object, Map map, List<String> results) {
         for (Object propKey : map.keySet()) {
             Map props = (Map)map.get(propKey);
-            String result = checkRef(object, propKey, props, false);
+            String result = checkRef(refTarget, object, propKey, props, false);
             if (result == null) {
                 Map items = (Map)props.get("items");
                 if (items != null) {
-                    result = checkRef(object, propKey, items, true);
+                    result = checkRef(refTarget, object, propKey, items, true);
                 }
             }
             if (result != null) {
@@ -56,7 +43,7 @@ public class Reader {
         }
     }
 
-    private String checkRef(String object, Object propKey, Map props, boolean array) {
+    private static String checkRef(String refTarget, String object, Object propKey, Map props, boolean array) {
         String ref = (String)props.get("$ref");
         if (refTarget.equals(ref)) {
             return "- `" + object + "." + propKey + (array ? "` _array_": "`");
@@ -64,7 +51,7 @@ public class Reader {
         return null;
     }
 
-    private Map<String, Map> getObjects(Map definitions) {
+    private static Map<String, Map> getObjects(Map definitions) {
         Map<String, Map> objects = new HashMap<>();
 
         for (Object oKey : definitions.keySet()) {

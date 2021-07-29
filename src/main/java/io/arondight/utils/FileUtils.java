@@ -1,22 +1,19 @@
 package io.arondight.utils;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 
 public class FileUtils {
 
-    public static String readUrl(String urlString) throws Exception {
+    public static String readUrl(String urlString) throws IOException {
         return readInputStream(new URL(urlString).openStream());
     }
 
-    public static String readFile(String fileSpec) throws Exception {
+    public static String readFile(String fileSpec) throws IOException {
         return readInputStream(new FileInputStream(fileSpec));
     }
 
-    public static String readInputStream(InputStream is) throws Exception {
+    public static String readInputStream(InputStream is) throws IOException {
         BufferedReader reader = null;
         try {
             InputStreamReader isr = new InputStreamReader(is);
